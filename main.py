@@ -1,8 +1,6 @@
 from pyspark.sql import SparkSession
-import os
 
 def main():
-    print(os.l)
     spark = SparkSession.builder.appName("MySparkApp").getOrCreate()
 
     data = [("Alice", 34), ("Bob", 45), ("Catherine", 29)]
