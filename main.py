@@ -1,12 +1,20 @@
 from pyspark.sql import SparkSession
+from shemas import title_basics_schema
+from pyspark.sql.functions import col
 
 def main():
     spark = SparkSession.builder.appName("MySparkApp").getOrCreate()
 
-    data = [("Alice", 34), ("Bob", 45), ("Catherine", 29)]
-    df = spark.createDataFrame(data, ["Name", "Age"])
+    df = spark.read.csv(
+    "raw_data/title.basics.tsv.gz",
+    sep="\t",
+    header=True,
+    schema=title_basics_schema,
+    nullValue="\\N"
+    )
+    # df = df.withColumn("startYear", col("startYear").cast("int"))
 
-    df.show()
+    df.show(n = 50)
 
     spark.stop()
 
