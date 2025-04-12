@@ -1,0 +1,20 @@
+{
+	"name": "PySpark Dev Container",
+	"build": {
+		"context": "..",
+		"dockerfile": "../Dockerfile"
+	},
+	"workspaceFolder": "/workspace",
+	"mounts": [
+		"source=${localWorkspaceFolder}/raw_data,target=/workspace/raw_data,type=bind"
+	],
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash",
+		"python.defaultInterpreterPath": "/usr/local/bin/python"
+	},
+	"extensions": [
+		"ms-python.python",
+		"ms-toolsai.jupyter"
+	],
+	"postCreateCommand": "git --version && python --version && pip list"
+}

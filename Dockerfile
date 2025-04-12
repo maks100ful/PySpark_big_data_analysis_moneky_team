@@ -1,18 +1,21 @@
-ARG IMAGE_VARIANT=slim-buster
-ARG OPENJDK_VERSION=8
-ARG PYTHON_VERSION=3.9.8
+FROM python:3.9.8-slim-buster AS base
 
-FROM python:${PYTHON_VERSION}-${IMAGE_VARIANT} AS py3
-FROM openjdk:${OPENJDK_VERSION}-${IMAGE_VARIANT}
-
-COPY --from=py3 / /
-
-ARG PYSPARK_VERSION=3.2.0
-
+# Install Java (OpenJDK 11 is available!)
 RUN apt-get update && apt-get install -y \
-    git 
+    openjdk-11-jdk \
+    git
 
-RUN pip --no-cache-dir install pyspark==${PYSPARK_VERSION}
+# Install Python packages
+RUN pip --no-cache-dir install pyspark==3.2.0 \
+    python-lsp-server[all] \
+    ipykernel
+
+WORKDIR /workspace
+
+# Set environment variables
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+ENV PATH="$JAVA_HOME/bin:$PATH"
+
 
 COPY . .
 
