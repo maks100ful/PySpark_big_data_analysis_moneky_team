@@ -56,6 +56,6 @@ name_basics_schema = StructType([
     StructField("primaryName", StringType(), True),
     StructField("birthYear", StringType(), True),
     StructField("deathYear", StringType(), True),
-    StructField("primaryProfession", StringType(), True)
+    StructField("primaryProfession", StringType(), True),
     StructField("knownForTitles", StringType(), True),
 ])
