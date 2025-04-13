@@ -1,85 +1,30 @@
 from pyspark.sql import SparkSession
-from shemas import *
-from pyspark.sql.functions import col
+
+from dataframes import*
 
 def main():
     spark = SparkSession.builder.appName("MySparkApp").getOrCreate()
 
-    df_title_basics = spark.read.csv(
-    "raw_data/title.basics.tsv.gz",
-    sep="\t",
-    header=True,
-    schema=title_basics_schema,
-    nullValue="\\N"
-    )
-    # df = df.withColumn("startYear", col("startYear").cast("int"))
+    df_name_basics = get_name_basic_df(spark=spark)
+    df_name_basics.show(n=10)
+    
+    df_title_akas = get_title_akas_df(spark=spark)
+    df_title_akas.show(n=10)
+    
+    df_title_basic = get_title_basic_df(spark=spark)
+    df_title_basic.show(n=10)
 
-    df_title_basics.show(n = 10)
+    df_title_crew = get_title_crew_df(spark=spark)
+    df_title_crew.show(n=10)
 
-    df_name_basics = spark.read.csv(
-    "raw_data/name.basics.tsv.gz",
-    sep="\t",
-    header=True,
-    schema=name_basics_schema,
-    nullValue="\\N"
-    )
+    df_title_episode = get_title_episode_df(spark=spark)
+    df_title_episode.show(n=10)
 
-    df_name_basics.show(n = 10)
+    df_title_principals = get_title_principals_df(spark=spark)
+    df_title_principals.show(n=10)
 
-    df_title_akas = spark.read.csv(
-    "raw_data/title.akas.tsv.gz",
-    sep="\t",
-    header=True,
-    schema=title_akas_schema,
-    nullValue="\\N"
-    )
-
-    df_title_akas.show(n = 10)
-
-
-    df_title_crew = spark.read.csv(
-    "raw_data/title.crew.tsv.gz",
-    sep="\t",
-    header=True,
-    schema=title_crew_schema,
-    nullValue="\\N"
-    )
-
-    df_title_crew.show(n = 10)
-
-
-    df_title_episode = spark.read.csv(
-    "raw_data/title.episode.tsv.gz",
-    sep="\t",
-    header=True,
-    schema=title_episode_schema,
-    nullValue="\\N"
-    )
-
-    df_title_episode.show(n = 10)
-
-
-    df_title_principals = spark.read.csv(
-    "raw_data/title.principals.tsv.gz",
-    sep="\t",
-    header=True,
-    schema=title_principals_schema,
-    nullValue="\\N"
-    )
-
-    df_title_principals.show(n = 10)
-
-
-    df_title_ratings = spark.read.csv(
-    "raw_data/title.ratings.tsv.gz",
-    sep="\t",
-    header=True,
-    schema=title_ratings_schema,
-    nullValue="\\N"
-    )
-
-    df_title_ratings.show(n = 10)
-
+    df_title_ratings = get_title_ratings_df(spark=spark)
+    df_title_ratings.show(n=10)
     spark.stop()
 
 if __name__ == "__main__":
