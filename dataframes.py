@@ -1,7 +1,7 @@
 from shemas import *
 from pyspark.sql import SparkSession, DataFrame
 
-from pyspark.sql.functions import col
+from pyspark.sql.functions import split, col
 
 def get_title_basic_df(spark : SparkSession) -> DataFrame:
     df_title_basics = spark.read.csv(
@@ -10,6 +10,11 @@ def get_title_basic_df(spark : SparkSession) -> DataFrame:
     header=True,
     schema=title_basics_schema,
     nullValue="\\N"
+    )
+    df_title_basics = df_title_basics.withColumn(
+        "genres", split(col("genres"), ",")
+    ).withColumn(
+        "isAdult", (col("isAdult") == "1")
     )
     return df_title_basics
 
@@ -21,6 +26,11 @@ def get_name_basic_df(spark : SparkSession) -> DataFrame:
     schema=name_basics_schema,
     nullValue="\\N"
     )
+    df_name_basics = df_name_basics.withColumn(
+        "primaryProfession", split(col("primaryProfession"), ",")
+    ).withColumn(
+        "knownForTitles", split(col("knownForTitles"), ",")
+    )
     return df_name_basics
 
 def get_title_akas_df(spark : SparkSession)-> DataFrame: 
@@ -31,6 +41,13 @@ def get_title_akas_df(spark : SparkSession)-> DataFrame:
     schema=title_akas_schema,
     nullValue="\\N"
     )
+    df_title_akas = df_title_akas.withColumn(
+        "types", split(col("types"), ",")
+    ).withColumn(
+        "attributes", split(col("attributes"), ",")
+    ).withColumn(
+        "isOriginalTitle", (col("isOriginalTitle") == 1)
+    )
     return df_title_akas
 
 def get_title_crew_df(spark : SparkSession)-> DataFrame: 
@@ -40,6 +57,11 @@ def get_title_crew_df(spark : SparkSession)-> DataFrame:
     header=True,
     schema=title_crew_schema,
     nullValue="\\N"
+    )
+    df_title_crew = df_title_crew.withColumn(
+        "directors", split(col("directors"), ",")
+    ).withColumn(
+        "writers", split(col("writers"), ",")
     )
     return df_title_crew
 

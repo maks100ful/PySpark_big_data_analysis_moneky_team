@@ -54,8 +54,8 @@ title_ratings_schema = StructType([
 name_basics_schema = StructType([
     StructField("nconst", StringType(), True),
     StructField("primaryName", StringType(), True),
-    StructField("birthYear", StringType(), True),
-    StructField("deathYear", StringType(), True),
+    StructField("birthYear", IntegerType(), True),
+    StructField("deathYear", IntegerType(), True),
     StructField("primaryProfession", StringType(), True),
     StructField("knownForTitles", StringType(), True),
 ])
