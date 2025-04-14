@@ -38,7 +38,7 @@ def main():
     # get_top_actors_high_rated_movies(df_title_principals, df_name_basics, df_title_ratings).show(truncate=False)
     # get_top_voted_movies_per_genre_in_2025(df_title_basic, df_title_ratings).show(truncate=False)
     # get_most_popular_genre_in_2025(df_title_basic).show(truncate=False)
-    get_top_countries_by_movie_count_2025(df_title_akas, df_title_basic).show(truncate=False)
+    # get_top_countries_by_movie_count_2025(df_title_akas, df_title_basic).show(truncate=False)
     spark.stop()
     
 
