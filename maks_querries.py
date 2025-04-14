@@ -1,5 +1,5 @@
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, count, row_number, explode, rank
+from pyspark.sql.functions import col, count, row_number, explode, rank, array_intersect, size, countDistinct
 from pyspark.sql.window import Window
 
 def get_top_genres(df_title_basics: DataFrame) -> DataFrame:
@@ -26,11 +26,36 @@ def get_longest_running_tv_series(df_title_episode: DataFrame, df_title_basics: 
     df_episode_counts = (
         df_title_episode.groupBy("parentTconst")
         .agg(count("*").alias("episode_count"))
-        .orderBy(col("episode_count").desc())
     )
     
     df_result = df_episode_counts.join(df_title_basics, df_episode_counts.parentTconst == df_title_basics.tconst).select(
         "primaryTitle", "episode_count", "parentTconst"
+    ).orderBy(col("episode_count").desc())
+    
+    return df_result
+
+def get_movies_with_same_director_and_writer(df_title_crew: DataFrame, df_title_basics: DataFrame, df_name_basics: DataFrame) -> DataFrame:
+    df_filtered = df_title_crew.filter(size(array_intersect(col("directors"), col("writers"))) > 0)
+    df_exploded = df_filtered.withColumn("person", explode(array_intersect(col("directors"), col("writers"))))
+
+    df_with_title = df_exploded.join(df_title_basics, "tconst")
+
+    df_with_person_name = df_with_title.join(df_name_basics, df_exploded.person == df_name_basics.nconst)
+
+    return df_with_person_name.select(
+        df_title_basics.primaryTitle.alias("Movie Title"),
+        df_name_basics.primaryName.alias("Director & Writer")
+    ).distinct()
+
+def get_movies_with_largest_cast(df_title_principals: DataFrame, df_title_basics: DataFrame) -> DataFrame:
+    df_cast_counts = (
+        df_title_principals.groupBy("tconst")
+        .agg(countDistinct("nconst").alias("cast_size"))
+        .limit(20)
     )
+    
+    df_result = df_cast_counts.join(df_title_basics, "tconst").select(
+        "primaryTitle", "cast_size", "tconst"
+    ).orderBy(col("cast_size").desc())
     
     return df_result
