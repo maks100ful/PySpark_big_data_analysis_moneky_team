@@ -59,3 +59,4 @@ name_basics_schema = StructType([
     StructField("primaryProfession", StringType(), True),
     StructField("knownForTitles", StringType(), True),
 ])
+
