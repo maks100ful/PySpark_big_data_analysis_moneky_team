@@ -43,14 +43,33 @@ def answer_business_questions():
         .filter(col("num_seasons") > 5) \
         .show()
 
-    # 6. Найбільш популярний епізод (найбільше голосів) для кожного шоу (window + join)
-    window_episode = Window.partitionBy("parentTconst").orderBy(col("numVotes").desc())
-    df_title_episode.join(df_title_ratings, df_title_episode["tconst"] == df_title_ratings["tconst"]) \
+    # 6. Найкращі епізоди серіалів (join + window)
+    episode = df_title_episode.alias("episode")
+    rating = df_title_ratings.alias("rating")
+    title_basic = df_title_basic.alias("title_basic")
+
+    window_episode = Window.partitionBy("episode.parentTconst").orderBy(col("rating.numVotes").desc())
+
+    top_episodes = episode.join(rating, episode["tconst"] == rating["tconst"]) \
+        .join(title_basic, episode["parentTconst"] == title_basic["tconst"]) \
         .withColumn("rank", row_number().over(window_episode)) \
         .filter(col("rank") == 1) \
-        .select("parentTconst", "tconst", "averageRating", "numVotes") \
-        .show()
+        .select(
+            col("episode.seasonNumber").alias("seasonNumber"),  # Номер сезону
+            col("episode.episodeNumber").alias("episodeNumber"),  # Номер епізоду
+            col("title_basic.primaryTitle").alias("showTitle"),  # Назва шоу
+            col("rating.averageRating"),
+            col("rating.numVotes")
+        ) \
+        .orderBy(col("rating.numVotes").desc())  # Сортуємо по кількості голосів
 
+    # Збереження результату у CSV файл
+    top_episodes.write.csv("/workspace/сsv/top_episodes.csv", header=True, mode="overwrite")
+
+    # Показ результатів
+    top_episodes.show()
+
+# Завершення роботи Spark
     spark.stop()
 
 if __name__ == "__main__":
