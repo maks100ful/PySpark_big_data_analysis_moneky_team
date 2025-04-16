@@ -1,8 +1,7 @@
 from pyspark.sql import SparkSession
 
-from dataframes import*
+from dataframes import *
 
-from maks_querries import get_top_genres, get_highest_rated_movie_per_genre, get_directors_with_more_than_5_movies, get_longest_running_tv_series, get_movies_with_same_director_and_writer, get_movies_with_largest_cast
 
 def main():
     spark = SparkSession.builder.appName("MySparkApp") \
