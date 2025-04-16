@@ -1,4 +1,6 @@
 raw_data/
+output_plots/
+csv/
 
 # Python cache
 __pycache__/
