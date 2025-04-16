@@ -4,19 +4,19 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import split, col
 
 def get_title_basic_df(spark : SparkSession) -> DataFrame:
-    df_title_basic = spark.read.csv(
+    df_title_basics = spark.read.csv(
     "raw_data/title.basics.tsv.gz",
     sep="\t",
     header=True,
     schema=title_basics_schema,
     nullValue="\\N"
     )
-    df_title_basic = df_title_basic.withColumn(
+    df_title_basics = df_title_basics.withColumn(
         "genres", split(col("genres"), ",")
     ).withColumn(
         "isAdult", (col("isAdult") == "1")
     )
-    return df_title_basic
+    return df_title_basics
 
 def get_name_basic_df(spark : SparkSession) -> DataFrame: 
     df_name_basics = spark.read.csv(
