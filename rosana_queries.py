@@ -38,6 +38,7 @@ def get_3_top_rated_alive_principals_by_category(df_name_basics: DataFrame, df_t
     result = principals_ratings.withColumn('rank', row_number().over(window_function)) \
              .filter(col('rank') <= 3) \
              .select('category', 'primaryName', 'birthYear', 'averageRating')
+    result.write.mode('overwrite').option('header', 'true').csv('2_query_csv')
     
     return result
     

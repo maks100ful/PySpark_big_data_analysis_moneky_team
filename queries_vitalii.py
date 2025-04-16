@@ -159,24 +159,24 @@ df_q4_ranked.write.mode("overwrite").csv("output/query4_ranked")
 #   - Group by: Aggregate by the genre combination.
 #   - Window: Rank genre combinations by movie count.
 # ------------------------------
-df_q5 = df_title_basic.join(df_title_ratings, "tconst")
+def genre_combination_popilarity(df_title_basic , df_title_ratings):
+    df_q5 = df_title_basic.join(df_title_ratings, "tconst")
 
-df_q5 = df_q5.filter(size(col("genres")) >= 2)
+    df_q5 = df_q5.filter(size(col("genres")) >= 2)
 
-df_q5 = df_q5.withColumn("genre_combo", concat_ws(",", array_sort(col("genres"))))
+    df_q5 = df_q5.withColumn("genre_combo", concat_ws(",", array_sort(col("genres"))))
 
-df_q5_grouped = df_q5.groupBy("genre_combo").agg(
-    expr("avg(averageRating) as avg_rating"),
-    expr("count(tconst) as movie_count")
-)
+    df_q5_grouped = df_q5.groupBy("genre_combo").agg(
+        expr("avg(averageRating) as avg_rating"),
+        expr("count(tconst) as movie_count")
+    )
 
-win_q5 = Window.orderBy(col("movie_count").desc())
-df_q5_grouped_ranked = df_q5_grouped.withColumn("combo_rank", row_number().over(win_q5))
+    win_q5 = Window.orderBy(col("movie_count").desc())
+    df_q5_grouped_ranked = df_q5_grouped.withColumn("combo_rank", row_number().over(win_q5))
 
-df_q5_grouped_ranked = drop_array_columns(df_q5_grouped_ranked)
+    df_q5_grouped_ranked = drop_array_columns(df_q5_grouped_ranked)
 
-# Save results.
-df_q5_grouped_ranked.write.mode("overwrite").csv("output/query5_results")
+    df_q5_grouped_ranked.write.mode("overwrite").csv("output/query5_results")
 
 # ------------------------------
 # Query 6: Post‑2010 Actor Productivity
