@@ -34,16 +34,6 @@ def main():
     df_title_ratings = get_title_ratings_df(spark=spark)
     # df_title_ratings.show(n=10)
 
-    #get_top_genres(df_title_basics=df_title_basic).show(truncate=False)
-
-    #get_highest_rated_movie_per_genre(df_title_basics=df_title_basic, df_title_ratings= df_title_ratings).show(truncate=False)
-
-    #get_longest_running_tv_series(df_title_episode = df_title_episode, df_title_basics = df_title_basic).show(truncate=False)
-
-    #get_movies_with_same_director_and_writer(df_name_basics= df_name_basics, df_title_crew= df_title_crew, df_title_basics= df_title_basic).show(truncate=False)
-
-    get_movies_with_largest_cast(df_title_basics= df_title_basic, df_title_principals= df_title_principals).show(truncate=False)
-
     spark.stop()
 
 if __name__ == "__main__":
