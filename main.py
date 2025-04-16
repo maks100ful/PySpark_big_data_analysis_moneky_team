@@ -2,6 +2,9 @@ from pyspark.sql import SparkSession
 
 from dataframes import *
 
+from queries_vitalii import genre_combination_popilarity
+from rosana_queries import get_3_top_rated_alive_principals_by_category
+from maks_querries import get_longest_running_tv_series
 
 def main():
     spark = SparkSession.builder.appName("MySparkApp") \
@@ -32,6 +35,10 @@ def main():
 
     df_title_ratings = get_title_ratings_df(spark=spark)
     # df_title_ratings.show(n=10)
+
+    #genre_combination_popilarity(df_title_basic=df_title_basic, df_title_ratings= df_title_ratings)
+    #get_3_top_rated_alive_principals_by_category(df_title_principals=df_title_principals, df_name_basics=df_name_basics, df_title_ratings=df_title_ratings)
+    #get_longest_running_tv_series(df_title_episode=df_title_episode, df_title_basics=df_title_basic)
 
     spark.stop()
 
