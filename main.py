@@ -2,15 +2,15 @@ from pyspark.sql import SparkSession
 
 from dataframes import *
 
-from queries_vitalii import genre_combination_popilarity
+# from queries_vitalii import genre_combination_popilarity
 from rosana_queries import get_3_top_rated_alive_principals_by_category
-from maks_querries import get_longest_running_tv_series
+from maks_querries import get_longest_running_tv_series, get_top_director_writer_counts
 from Lidiia_6 import get_top_rated_horror_movies_by_year
 
 def main():
     spark = SparkSession.builder.appName("MySparkApp") \
     .config("spark.driver.memory", "4g") \
-    .config("spark.executor.memory", "4g") \
+    .config("spark.executor.memory", "12g") \
     .config("spark.sql.shuffle.partitions", "200") \
     .config("spark.memory.fraction", "0.8") \
     .config("spark.memory.storageFraction", "0.5") \
@@ -39,8 +39,9 @@ def main():
 
     #genre_combination_popilarity(df_title_basic=df_title_basic, df_title_ratings= df_title_ratings)
     #get_3_top_rated_alive_principals_by_category(df_title_principals=df_title_principals, df_name_basics=df_name_basics, df_title_ratings=df_title_ratings)
-    #get_longest_running_tv_series(df_title_episode=df_title_episode, df_title_basics=df_title_basic)
-    #get_top_rated_horror_movies_by_year(df_title_basic=df_title_basic, df_title_ratings=df_title_ratings)
+    #get_longest_running_tv_series(df_title_episode=df_title_episode, df_title_basics=df_title_basic).show(truncate=False)
+    get_top_rated_horror_movies_by_year(df_title_basic=df_title_basic, df_title_ratings=df_title_ratings)
+    #get_top_director_writer_counts(df_title_crew=df_title_crew, df_name_basics= df_name_basics, df_title_basics=df_title_basic).show(truncate=False)
 
     spark.stop()
 

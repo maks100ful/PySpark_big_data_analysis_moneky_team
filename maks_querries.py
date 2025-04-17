@@ -29,23 +29,34 @@ def get_longest_running_tv_series(df_title_episode: DataFrame, df_title_basics: 
     )
     
     df_result = df_episode_counts.join(df_title_basics, df_episode_counts.parentTconst == df_title_basics.tconst).select(
-        "primaryTitle", "episode_count", "parentTconst"
+        "primaryTitle", "episode_count"
     ).orderBy(col("episode_count").desc())
-    
+    df_result.write.mode("overwrite").option("header", True).csv("output/longest_running_tv_series")
     return df_result
 
-def get_movies_with_same_director_and_writer(df_title_crew: DataFrame, df_title_basics: DataFrame, df_name_basics: DataFrame) -> DataFrame:
+def get_top_director_writer_counts(df_title_crew: DataFrame,
+                                   df_title_basics: DataFrame,
+                                   df_name_basics: DataFrame) -> DataFrame:
+    df_movies_only = df_title_basics.filter(col("titleType") == "movie")
+
     df_filtered = df_title_crew.filter(size(array_intersect(col("directors"), col("writers"))) > 0)
     df_exploded = df_filtered.withColumn("person", explode(array_intersect(col("directors"), col("writers"))))
 
-    df_with_title = df_exploded.join(df_title_basics, "tconst")
+    df_with_title = df_exploded.join(df_movies_only, "tconst")
 
     df_with_person_name = df_with_title.join(df_name_basics, df_exploded.person == df_name_basics.nconst)
 
-    return df_with_person_name.select(
-        df_title_basics.primaryTitle.alias("Movie Title"),
+    df_counts = df_with_person_name.groupBy(
         df_name_basics.primaryName.alias("Director & Writer")
-    ).distinct()
+    ).agg(count("*").alias("movie_count"))
+
+    window_spec = Window.orderBy(col("movie_count").desc())
+    df_top = df_counts.withColumn("rank", row_number().over(window_spec)).filter(col("rank") <= 10)
+
+    df_top.select("Director & Writer", "movie_count") \
+        .write.mode("overwrite").option("header", True).csv("output/top_director_writer_counts")
+
+    return df_top.select("Director & Writer", "movie_count")
 
 def get_movies_with_largest_cast(df_title_principals: DataFrame, df_title_basics: DataFrame) -> DataFrame:
     df_cast_counts = (
