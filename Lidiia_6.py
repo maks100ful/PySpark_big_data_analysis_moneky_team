@@ -18,6 +18,7 @@ def get_top_voted_movies_per_genre(df_title_basic:DataFrame, df_title_ratings:Da
 
 def get_top_rated_horror_movies_by_year(df_title_basic:DataFrame, df_title_ratings:DataFrame):
     df = df_title_basic.join(df_title_ratings, on="tconst")
+    df = df.filter(col("startYear").isNotNull())
 
     df = df.withColumn("genre", explode(col("genres"))) \
         .filter(col("genre") == "Horror")
@@ -27,6 +28,10 @@ def get_top_rated_horror_movies_by_year(df_title_basic:DataFrame, df_title_ratin
     result = df.withColumn("rank", row_number().over(window_spec)) \
         .filter("rank = 1") \
         .select("startYear", "primaryTitle", "averageRating")
+    
+    result.write.mode("overwrite") \
+           .option("header", True) \
+           .csv("output/top_rated_horror_movies_by_year")
     return result
 
 def get_top_actors_high_rated_movies(df_title_principals:DataFrame, df_name_basics:DataFrame, df_title_ratings:DataFrame):
